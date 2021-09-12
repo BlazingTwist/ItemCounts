@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "itemcounts",
+  "version": "${version}",
+
+  "name": "Item Counts",
+  "description": "Adds the total amount of items in your inventory to the hotbar.",
+  "authors": [
+    "BlazingTwist"
+  ],
+  "contact": {
+    "homepage": "https://github.com/BlazingTwist",
+    "sources": "https://github.com/BlazingTwist/ItemCounts"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/itemcounts/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "blazingtwist.itemcounts.ItemCounts"
+    ],
+    "modmenu": [
+      "blazingtwist.itemcounts.ItemCountsModMenuImpl"
+    ]
+  },
+  "mixins": [
+    "itemcounts.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16"
+  },
+  "suggests": {
+    "fabric": "*"
+  },
+  "custom": {
+    "modmenu:clientsideOnly": true
+  }
+}
