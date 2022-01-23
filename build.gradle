@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.9-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -29,10 +29,10 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation("me.shedaniel.cloth:cloth-config-fabric:(,5.1)") {
+	modImplementation("me.shedaniel.cloth:cloth-config-fabric:(,4.11)") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	modImplementation("com.terraformersmc:modmenu:(,2.1)") {
+	modImplementation("com.terraformersmc:modmenu:(,1.16)") {
 		exclude group: "net.fabricmc.fabric-api"
 	}
 
@@ -76,13 +76,7 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 

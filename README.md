@@ -1,7 +1,10 @@
+# DOES NOT WORK
+Don't know why.
+
 # ItemCounts
 
 A Minecraft [Fabric](https://fabricmc.net/) mod that displays the total amount of items in your hotbar.  
-Built for version 1.17.1
+Built for version 1.16.5
 
 [Curseforge release](https://www.curseforge.com/minecraft/mc-mods/item-counts-fabric)
 

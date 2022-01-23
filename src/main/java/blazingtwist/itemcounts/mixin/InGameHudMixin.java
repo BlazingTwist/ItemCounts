@@ -18,6 +18,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ public abstract class InGameHudMixin {
 	}
 
 	private int getTotalItemCount(PlayerEntity player, ItemStack stack) {
-		return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
+		return Stream.concat(player.inventory.main.stream(), player.inventory.offHand.stream())
 				.filter(other -> other.isItemEqual(stack))
 				.mapToInt(ItemStack::getCount)
 				.sum();
@@ -101,7 +102,7 @@ public abstract class InGameHudMixin {
 		TextRenderer renderer = client.textRenderer;
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor, 250);
-		if(isOnHotbar){
+		if (isOnHotbar) {
 			matrixStack.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
 		}
 		matrixStack.scale(scaleFactor, scaleFactor, 1);
@@ -121,25 +122,35 @@ public abstract class InGameHudMixin {
 	}
 
 	private void renderItemAt(ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar) {
-		//textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-		RenderSystem.enableBlend();
+		TextureManager textureManager;
+		try {
+			textureManager = (TextureManager) itemRenderer.getClass()
+					.getDeclaredField("textureManager")
+					.get(itemRenderer);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			System.err.println("Failed to gather textureManager from ItemRenderer!");
+			e.printStackTrace();
+			return;
+		}
+		RenderSystem.pushMatrix();
+		textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.defaultAlphaFunc();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.translate(x, y, 100.0F);
-		if(isOnHotbar){
-			matrixStack.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.translatef(x, y, 100.0F);
+		if (isOnHotbar) {
+			RenderSystem.translatef(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
 		}
-		matrixStack.scale(1.0F, -1.0F, 1.0F);
-		matrixStack.scale(16.0F, 16.0F, 16.0F);
-		RenderSystem.applyModelViewMatrix();
+		RenderSystem.scalef(1.0F, -1.0F, 1.0F);
+		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
 		MatrixStack matrixStack2 = new MatrixStack();
 		matrixStack2.scale(scaleFactor, scaleFactor, scaleFactor);
+
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		BakedModel model = itemRenderer.getHeldItemModel(item, null, null, 0);
+		BakedModel model = itemRenderer.getHeldItemModel(item, null, null);
 		boolean bl = !model.isSideLit();
 		if (bl) {
 			DiffuseLighting.disableGuiDepthLighting();
@@ -152,8 +163,9 @@ public abstract class InGameHudMixin {
 			DiffuseLighting.enableGuiDepthLighting();
 		}
 
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.popMatrix();
 	}
 
 	@Inject(method = "renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V", at = @At("HEAD"))
@@ -168,8 +180,8 @@ public abstract class InGameHudMixin {
 		renderOffhandItemCount(config, cameraPlayer, cameraPlayer.getOffHandStack());
 	}
 
-	@Inject(method = "renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V", at = @At("HEAD"))
-	public void onRenderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
+	@Inject(method = "renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;)V", at = @At("HEAD"))
+	public void onRenderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
 		}
