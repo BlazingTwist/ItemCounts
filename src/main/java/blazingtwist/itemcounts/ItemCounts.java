@@ -26,6 +26,5 @@ public class ItemCounts implements ModInitializer {
 		AutoConfig.register(ItemCountsConfig.class, GsonConfigSerializer::new);
 
 		configHolder = AutoConfig.getConfigHolder(ItemCountsConfig.class);
-		System.out.println("Hello Fabric world!");
 	}
 }
