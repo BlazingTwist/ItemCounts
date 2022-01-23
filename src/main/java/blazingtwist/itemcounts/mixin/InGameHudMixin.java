@@ -112,7 +112,7 @@ public abstract class InGameHudMixin {
 				(y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2),
 				16777215,
 				true,
-				matrixStack.peek().getModel(),
+				matrixStack.peek().getPositionMatrix(),
 				immediate,
 				false,
 				0,
@@ -139,7 +139,7 @@ public abstract class InGameHudMixin {
 		MatrixStack matrixStack2 = new MatrixStack();
 		matrixStack2.scale(scaleFactor, scaleFactor, scaleFactor);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		BakedModel model = itemRenderer.getHeldItemModel(item, null, null, 0);
+		BakedModel model = itemRenderer.getModel(item, null, null, 0);
 		boolean bl = !model.isSideLit();
 		if (bl) {
 			DiffuseLighting.disableGuiDepthLighting();
