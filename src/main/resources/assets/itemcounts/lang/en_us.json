@@ -3,6 +3,8 @@
   "category.itemcounts": "Item Counts",
 
   "text.autoconfig.itemcounts.option.showActiveItemCount": "Show item-count for selected item",
+  "text.autoconfig.itemcounts.option.showActiveItemDurabilityFilter": "selected Tools of this Type show durability instead of item-count",
+  "text.autoconfig.itemcounts.option.showActiveItemDurability": "Show durability for selected tool",
   "text.autoconfig.itemcounts.option.activeItemCountTextScale": "Scale-factor for selected item text",
   "text.autoconfig.itemcounts.option.showActiveItemIcon": "Show the selected item-icon as well",
   "text.autoconfig.itemcounts.option.activeItemCountOffset": "Configure offset of text relative to crosshair",
@@ -10,6 +12,8 @@
   "text.autoconfig.itemcounts.option.activeItemCountOffset.y": "y > 0 moves text down, y < 0 moves text up",
 
   "text.autoconfig.itemcounts.option.showOffhandItemCount": "Show item-count for offhand item",
+  "text.autoconfig.itemcounts.option.showOffhandItemDurabilityFilter": "offhand Tools of this Type show durability instead of item-count",
+  "text.autoconfig.itemcounts.option.showOffhandItemDurability": "Show durability for offhand tool",
   "text.autoconfig.itemcounts.option.offhandItemCountTextScale": "Scale-factor for offhand item text",
   "text.autoconfig.itemcounts.option.showOffhandItemIcon": "Show the offhand item-icon as well",
   "text.autoconfig.itemcounts.option.offhandItemCountOffset": "Configure offset of text relative to crosshair",
@@ -17,6 +21,8 @@
   "text.autoconfig.itemcounts.option.offhandItemCountOffset.y": "y > 0 moves text down, y < 0 moves text up",
 
   "text.autoconfig.itemcounts.option.showOnHotbar": "Show item-count for all items in hotbar",
+  "text.autoconfig.itemcounts.option.showHotbarItemDurabilityFilter": "hotbar Tools of this Type show durability instead of item-count",
+  "text.autoconfig.itemcounts.option.showHotbarItemDurability": "Show durability for offhand tool",
   "text.autoconfig.itemcounts.option.hotbarItemCountTextScale": "Scale-factor for toolbar item text",
   "text.autoconfig.itemcounts.option.showHotbarItemIcon": "Show the hotbar item-icons as well",
   "text.autoconfig.itemcounts.option.hotbarItemCountOffset": "Configure offset of text relative to hotbar slots",
