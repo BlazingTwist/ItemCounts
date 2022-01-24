@@ -1,6 +1,9 @@
 package blazingtwist.itemcounts.mixin;
 
 import blazingtwist.itemcounts.ItemCounts;
+import blazingtwist.itemcounts.config.CountDisplayOption;
+import blazingtwist.itemcounts.config.DurabilityDisplayOption;
+import blazingtwist.itemcounts.config.DurabilityItemOption;
 import blazingtwist.itemcounts.config.ItemCountsConfig;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -59,49 +62,75 @@ public abstract class InGameHudMixin {
 	}
 
 	private void renderActiveItemCount(ItemCountsConfig config, PlayerEntity player, ItemStack stack) {
-		if (!config.showActiveItemCount || stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return;
 		}
 
 		int x = scaledWidth / 2 + config.activeItemCountOffset.x;
 		int y = scaledHeight / 2 + config.activeItemCountOffset.y;
-		renderTextAt("" + getTotalItemCount(player, stack), x, y, config.activeItemCountTextScale, false);
-		if (config.showActiveItemIcon) {
+		boolean didRenderText = renderItemText(config.showActiveItemCount, config.showActiveItemDurabilityFilter,
+				config.showActiveItemDurability, player, stack, x, y, config.activeItemCountTextScale, false);
+		if (config.showActiveItemIcon.shouldShowIcon(didRenderText)) {
 			renderItemAt(stack, x, y, config.activeItemCountTextScale, false);
 		}
 	}
 
 	private void renderOffhandItemCount(ItemCountsConfig config, PlayerEntity player, ItemStack stack) {
-		if (!config.showOffhandItemCount || stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return;
 		}
 
 		int x = scaledWidth / 2 + config.offhandItemCountOffset.x;
 		int y = scaledHeight / 2 + config.offhandItemCountOffset.y;
-		renderTextAt("" + getTotalItemCount(player, stack), x, y, config.offhandItemCountTextScale, false);
-		if (config.showOffhandItemIcon) {
+		boolean didRenderText = renderItemText(config.showOffhandItemCount, config.showOffhandItemDurabilityFilter,
+				config.showOffhandItemDurability, player, stack, x, y, config.offhandItemCountTextScale, false);
+		if (config.showOffhandItemIcon.shouldShowIcon(didRenderText)) {
 			renderItemAt(stack, x, y, config.offhandItemCountTextScale, false);
 		}
 	}
 
 	private void renderHotbarItemCount(ItemCountsConfig config, PlayerEntity player, int x, int y, ItemStack stack) {
-		if (!config.showOnHotbar || stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return;
 		}
 
 		x += config.hotbarItemCountOffset.x;
 		y += config.hotbarItemCountOffset.y;
-		renderTextAt("" + getTotalItemCount(player, stack), x, y, config.hotbarItemCountTextScale, true);
-		if (config.showHotbarItemIcon) {
+		boolean didRenderText = renderItemText(config.showOnHotbar, config.showHotbarItemDurabilityFilter,
+				config.showHotbarItemDurability, player, stack, x, y, config.hotbarItemCountTextScale, true);
+		if (config.showHotbarItemIcon.shouldShowIcon(didRenderText)) {
 			renderItemAt(stack, x, y, config.hotbarItemCountTextScale, true);
 		}
 	}
 
-	private void renderTextAt(String text, int x, int y, float scaleFactor, boolean isOnHotbar) {
+	private boolean renderItemText(CountDisplayOption countOption,
+								   DurabilityItemOption durabilityFilter, DurabilityDisplayOption durabilityOption,
+								   PlayerEntity player, ItemStack stack, int x, int y, float scale, boolean onHotbar) {
+		String text;
+		int color = -1;
+		if (stack.isDamageable() && durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
+			if (!durabilityOption.shouldShowDurability(stack)) {
+				return false;
+			}
+			text = "" + (stack.getMaxDamage() - stack.getDamage());
+			color = stack.getItemBarColor();
+		} else {
+			int totalCount = getTotalItemCount(player, stack);
+			if (!countOption.shouldShowCount(stack, totalCount)) {
+				return false;
+			}
+			text = "" + totalCount;
+		}
+
+		renderTextAt(text, color, x, y, scale, onHotbar);
+		return true;
+	}
+
+	private void renderTextAt(String text, int color, int x, int y, float scaleFactor, boolean isOnHotbar) {
 		TextRenderer renderer = client.textRenderer;
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor, 250);
-		if(isOnHotbar){
+		if (isOnHotbar) {
 			matrixStack.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
 		}
 		matrixStack.scale(scaleFactor, scaleFactor, 1);
@@ -110,7 +139,7 @@ public abstract class InGameHudMixin {
 				text,
 				(x / scaleFactor) - (renderer.getWidth(text) / 2f),
 				(y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2),
-				16777215,
+				color >= 0 ? color : 16777215,
 				true,
 				matrixStack.peek().getPositionMatrix(),
 				immediate,
@@ -130,7 +159,7 @@ public abstract class InGameHudMixin {
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
 		matrixStack.translate(x, y, 100.0F);
-		if(isOnHotbar){
+		if (isOnHotbar) {
 			matrixStack.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
 		}
 		matrixStack.scale(1.0F, -1.0F, 1.0F);
