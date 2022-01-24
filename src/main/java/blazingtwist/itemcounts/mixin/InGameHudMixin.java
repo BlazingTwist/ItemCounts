@@ -1,9 +1,6 @@
 package blazingtwist.itemcounts.mixin;
 
 import blazingtwist.itemcounts.ItemCounts;
-import blazingtwist.itemcounts.config.CountDisplayOption;
-import blazingtwist.itemcounts.config.DurabilityDisplayOption;
-import blazingtwist.itemcounts.config.DurabilityItemOption;
 import blazingtwist.itemcounts.config.ItemCountsConfig;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,7 +21,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,11 +45,6 @@ public abstract class InGameHudMixin {
 	@Shadow
 	private int scaledHeight;
 
-	@Shadow
-	private PlayerEntity getCameraPlayer() {
-		throw new NotImplementedException("Stub method called!");
-	}
-
 	private int getTotalItemCount(PlayerEntity player, ItemStack stack) {
 		return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
 				.filter(other -> other.isItemEqual(stack))
@@ -61,68 +52,43 @@ public abstract class InGameHudMixin {
 				.sum();
 	}
 
-	private void renderActiveItemCount(ItemCountsConfig config, PlayerEntity player, ItemStack stack) {
-		if (stack.isEmpty()) {
+	private void renderItemOverlay(ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
+								   PlayerEntity player, ItemStack stack, int x, int y) {
+		if (!config.enabled) {
 			return;
 		}
+		if (!onHotbar) {
+			x = scaledWidth / 2;
+			y = scaledHeight / 2;
+		}
+		x += config.offset.x;
+		y += config.offset.y;
 
-		int x = scaledWidth / 2 + config.activeItemCountOffset.x;
-		int y = scaledHeight / 2 + config.activeItemCountOffset.y;
-		boolean didRenderText = renderItemText(config.showActiveItemCount, config.showActiveItemDurabilityFilter,
-				config.showActiveItemDurability, player, stack, x, y, config.activeItemCountTextScale, false);
-		if (config.showActiveItemIcon.shouldShowIcon(didRenderText)) {
-			renderItemAt(stack, x, y, config.activeItemCountTextScale, false);
+		boolean didRenderText = renderItemText(config, onHotbar, player, stack, x, y);
+		if (config.iconOption.shouldShowIcon(didRenderText)) {
+			renderItemAt(stack, x, y, config.offset.textScale, onHotbar);
 		}
 	}
 
-	private void renderOffhandItemCount(ItemCountsConfig config, PlayerEntity player, ItemStack stack) {
-		if (stack.isEmpty()) {
-			return;
-		}
-
-		int x = scaledWidth / 2 + config.offhandItemCountOffset.x;
-		int y = scaledHeight / 2 + config.offhandItemCountOffset.y;
-		boolean didRenderText = renderItemText(config.showOffhandItemCount, config.showOffhandItemDurabilityFilter,
-				config.showOffhandItemDurability, player, stack, x, y, config.offhandItemCountTextScale, false);
-		if (config.showOffhandItemIcon.shouldShowIcon(didRenderText)) {
-			renderItemAt(stack, x, y, config.offhandItemCountTextScale, false);
-		}
-	}
-
-	private void renderHotbarItemCount(ItemCountsConfig config, PlayerEntity player, int x, int y, ItemStack stack) {
-		if (stack.isEmpty()) {
-			return;
-		}
-
-		x += config.hotbarItemCountOffset.x;
-		y += config.hotbarItemCountOffset.y;
-		boolean didRenderText = renderItemText(config.showOnHotbar, config.showHotbarItemDurabilityFilter,
-				config.showHotbarItemDurability, player, stack, x, y, config.hotbarItemCountTextScale, true);
-		if (config.showHotbarItemIcon.shouldShowIcon(didRenderText)) {
-			renderItemAt(stack, x, y, config.hotbarItemCountTextScale, true);
-		}
-	}
-
-	private boolean renderItemText(CountDisplayOption countOption,
-								   DurabilityItemOption durabilityFilter, DurabilityDisplayOption durabilityOption,
-								   PlayerEntity player, ItemStack stack, int x, int y, float scale, boolean onHotbar) {
+	private boolean renderItemText(ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
+								   PlayerEntity player, ItemStack stack, int x, int y) {
 		String text;
 		int color = -1;
-		if (stack.isDamageable() && durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
-			if (!durabilityOption.shouldShowDurability(stack)) {
+		if (stack.isDamageable() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
+			if (!config.durabilityOption.shouldShowDurability(stack)) {
 				return false;
 			}
 			text = "" + (stack.getMaxDamage() - stack.getDamage());
 			color = stack.getItemBarColor();
 		} else {
 			int totalCount = getTotalItemCount(player, stack);
-			if (!countOption.shouldShowCount(stack, totalCount)) {
+			if (!config.countOption.shouldShowCount(stack, totalCount)) {
 				return false;
 			}
 			text = "" + totalCount;
 		}
 
-		renderTextAt(text, color, x, y, scale, onHotbar);
+		renderTextAt(text, color, x, y, config.offset.textScale, onHotbar);
 		return true;
 	}
 
@@ -185,18 +151,6 @@ public abstract class InGameHudMixin {
 		RenderSystem.applyModelViewMatrix();
 	}
 
-	@Inject(method = "renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V", at = @At("HEAD"))
-	public void onRenderHotbar(float tickDelta, MatrixStack matrices, CallbackInfo info) {
-		PlayerEntity cameraPlayer = getCameraPlayer();
-		if (cameraPlayer == null) {
-			return;
-		}
-
-		ItemCountsConfig config = ItemCounts.getConfig();
-		renderActiveItemCount(config, cameraPlayer, cameraPlayer.getMainHandStack());
-		renderOffhandItemCount(config, cameraPlayer, cameraPlayer.getOffHandStack());
-	}
-
 	@Inject(method = "renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V", at = @At("HEAD"))
 	public void onRenderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
@@ -204,6 +158,17 @@ public abstract class InGameHudMixin {
 		}
 
 		ItemCountsConfig config = ItemCounts.getConfig();
-		renderHotbarItemCount(config, player, x, y, stack);
+
+		if (player.getMainHandStack() == stack) {
+			renderItemOverlay(config.mainHand_relativeToCrosshairConfig, false, player, stack, x, y);
+			renderItemOverlay(config.mainHand_relativeToHotbarConfig, true, player, stack, x, y);
+		}
+
+		if (player.getOffHandStack() == stack) {
+			renderItemOverlay(config.offHand_relativeToCrosshairConfig, false, player, stack, x, y);
+			renderItemOverlay(config.offHand_relativeToHotbarConfig, true, player, stack, x, y);
+		}
+
+		renderItemOverlay(config.hotbar_relativeToHotbarConfig, true, player, stack, x, y);
 	}
 }
