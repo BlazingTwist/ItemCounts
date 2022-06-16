@@ -4,10 +4,10 @@ import java.util.function.Function;
 import net.minecraft.item.ItemStack;
 
 public enum DurabilityDisplayOption {
-	NEVER(stack -> false),
-	ALWAYS(stack -> true),
-	DAMAGED(ItemStack::isDamaged),
-	ALMOST_BROKEN(stack -> stack.isDamageable() && ((float) stack.getDamage() / stack.getMaxDamage()) > 0.85f);
+	@AutoConfigEnum NEVER(stack -> false),
+	@AutoConfigEnum ALWAYS(stack -> true),
+	@AutoConfigEnum DAMAGED(ItemStack::isDamaged),
+	@AutoConfigEnum ALMOST_BROKEN(stack -> stack.isDamageable() && ((float) stack.getDamage() / stack.getMaxDamage()) > 0.85f);
 
 	private final Function<ItemStack, Boolean> acceptanceCriteria;
 
