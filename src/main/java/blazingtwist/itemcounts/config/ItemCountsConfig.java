@@ -35,6 +35,7 @@ public class ItemCountsConfig implements ConfigData {
 			0, -5, 0.75f);
 
 	public static class ItemRenderConfig {
+		@AutoConfigConstructor
 		public ItemRenderConfig() {
 		}
 
@@ -42,6 +43,7 @@ public class ItemCountsConfig implements ConfigData {
 								DurabilityItemOption durabilityFilter, DurabilityDisplayOption durabilityOption,
 								IconDisplayOption iconOption,
 								int xOffset, int yOffset, float textScale) {
+			this.enabled = enabled;
 			this.countOption = countOption;
 			this.durabilityFilter = durabilityFilter;
 			this.durabilityOption = durabilityOption;
@@ -59,6 +61,7 @@ public class ItemCountsConfig implements ConfigData {
 	}
 
 	public static class HudOffset {
+		@AutoConfigConstructor
 		public HudOffset() {
 		}
 

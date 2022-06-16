@@ -4,10 +4,10 @@ import java.util.function.BiFunction;
 import net.minecraft.item.ItemStack;
 
 public enum CountDisplayOption {
-	NEVER((stack, count) -> false),
-	ALWAYS((stack, count) -> true),
-	MORE_THAN_ONE((stack, count) -> count > 1),
-	MORE_THAN_STACK((stack, count) -> count > stack.getMaxCount());
+	@AutoConfigEnum NEVER((stack, count) -> false),
+	@AutoConfigEnum ALWAYS((stack, count) -> true),
+	@AutoConfigEnum MORE_THAN_ONE((stack, count) -> count > 1),
+	@AutoConfigEnum MORE_THAN_STACK((stack, count) -> count > stack.getMaxCount());
 
 	private final BiFunction<ItemStack, Integer, Boolean> acceptanceCriteria;
 
