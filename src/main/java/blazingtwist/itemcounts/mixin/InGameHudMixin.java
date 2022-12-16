@@ -117,7 +117,7 @@ public abstract class InGameHudMixin {
 
 	private void renderItemAt(ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar) {
 		//textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
