@@ -3,6 +3,7 @@
   "text.autoconfig.itemcounts.category.mainHand": "MainHand",
   "text.autoconfig.itemcounts.category.offHand": "OffHand",
   "text.autoconfig.itemcounts.category.hotbar": "Hotbar",
+  "text.autoconfig.itemcounts.category.rules": "Rules",
 
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig": "Configure overlay relative to hotbar for active item",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.enabled": "enable this overlay",
@@ -57,5 +58,10 @@
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset": "Configure offset",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
-  "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.textScale": "Scale-factor for text"
+  "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.textScale": "Scale-factor for text",
+
+  "text.autoconfig.itemcounts.option.item_count_rules": "Configure how items are counted",
+  "text.autoconfig.itemcounts.option.item_count_rules.separateNbtData": "separate item-count by item NBT tags",
+  "text.autoconfig.itemcounts.option.item_count_rules.separateName": "separate item-count by item name",
+  "text.autoconfig.itemcounts.option.item_count_rules.separateDurability": "separate item-count by remaining durability"
 }
