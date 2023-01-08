@@ -46,8 +46,9 @@ public abstract class InGameHudMixin {
 	private int scaledHeight;
 
 	private int getTotalItemCount(PlayerEntity player, ItemStack stack) {
+		ItemCountsConfig.ItemCountSeparationRules item_count_rules = ItemCounts.getConfig().item_count_rules;
 		return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
-				.filter(other -> other.isItemEqual(stack))
+				.filter(other -> other.isItemEqual(stack) && !item_count_rules.countStacksSeparately(stack, other))
 				.mapToInt(ItemStack::getCount)
 				.sum();
 	}
