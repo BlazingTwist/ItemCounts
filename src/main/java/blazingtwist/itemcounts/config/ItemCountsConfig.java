@@ -121,6 +121,7 @@ public class ItemCountsConfig implements ConfigData {
 		public int x = 0;
 		public int y = 0;
 		public float textScale = 1f;
+		public TextAnchorOption anchor = TextAnchorOption.CENTER;
 	}
 
 	public static class ItemCountSeparationRules {
@@ -169,7 +170,7 @@ public class ItemCountsConfig implements ConfigData {
 			if (a.hasNbt() != b.hasNbt()) {
 				return false;
 			}
-			if(!a.hasNbt() || a.getNbt() == null) {
+			if (!a.hasNbt() || a.getNbt() == null) {
 				// neither itemStack has NBT data
 				return true;
 			}
