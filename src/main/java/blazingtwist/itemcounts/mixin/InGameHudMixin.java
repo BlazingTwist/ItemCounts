@@ -4,7 +4,6 @@ import blazingtwist.itemcounts.ItemCounts;
 import blazingtwist.itemcounts.config.ItemCountsConfig;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -45,14 +44,6 @@ public abstract class InGameHudMixin {
 	@Shadow
 	private int scaledHeight;
 
-	private int getTotalItemCount(PlayerEntity player, ItemStack stack) {
-		ItemCountsConfig.ItemCountSeparationRules item_count_rules = ItemCounts.getConfig().item_count_rules;
-		return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
-				.filter(other -> other.isItemEqual(stack) && !item_count_rules.countStacksSeparately(stack, other))
-				.mapToInt(ItemStack::getCount)
-				.sum();
-	}
-
 	private void renderItemOverlay(ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
 								   PlayerEntity player, ItemStack stack, int x, int y) {
 		if (!config.enabled) {
@@ -82,11 +73,10 @@ public abstract class InGameHudMixin {
 			text = "" + (stack.getMaxDamage() - stack.getDamage());
 			color = stack.getItemBarColor();
 		} else {
-			int totalCount = getTotalItemCount(player, stack);
-			if (!config.countOption.shouldShowCount(stack, totalCount)) {
+			if (!config.countOption.shouldShowCount(player, stack)) {
 				return false;
 			}
-			text = "" + totalCount;
+			text = "" + ItemCounts.getConfig().item_count_rules.getTotalItemCount(player, stack);
 		}
 
 		renderTextAt(text, color, x, y, config.offset.textScale, onHotbar);
