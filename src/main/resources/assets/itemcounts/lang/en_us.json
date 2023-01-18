@@ -15,6 +15,7 @@
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.offset.textScale": "Scale-factor for text",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.offset.anchor": "Anchor-position, text grows outwards from its anchor",
 
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig": "Configure overlay relative to crosshair for active item",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.enabled": "enable this overlay",
@@ -26,6 +27,7 @@
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.offset.textScale": "Scale-factor for text",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.offset.anchor": "Anchor-position, text grows outwards from its anchor",
 
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig": "Configure overlay relative to hotbar for offhand item",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.enabled": "enable this overlay",
@@ -37,6 +39,7 @@
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.offset.textScale": "Scale-factor for text",
+  "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.offset.anchor": "Anchor-position, text grows outwards from its anchor",
 
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig": "Configure overlay relative to crosshair for offhand item",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.enabled": "enable this overlay",
@@ -48,6 +51,7 @@
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.offset.textScale": "Scale-factor for text",
+  "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.offset.anchor": "Anchor-position, text grows outwards from its anchor",
 
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig": "Configure overlay relative to hotbar for hotbar items",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.enabled": "enable this overlay",
@@ -59,6 +63,7 @@
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.x": "x > 0 moves text right, x < 0 moves text left",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.y": "y > 0 moves text down, y < 0 moves text up",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.textScale": "Scale-factor for text",
+  "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.offset.anchor": "Anchor-position, text grows outwards from its anchor",
 
   "text.autoconfig.itemcounts.option.item_count_rules": "Configure how items are counted",
   "text.autoconfig.itemcounts.option.item_count_rules.separateNbtData": "separate item-count by item NBT tags",

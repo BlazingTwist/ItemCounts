@@ -79,11 +79,13 @@ public abstract class InGameHudMixin {
 			text = "" + ItemCounts.getConfig().item_count_rules.getTotalItemCount(player, stack);
 		}
 
-		renderTextAt(text, color, x, y, config.offset.textScale, onHotbar);
+		renderTextAt(config, text, color, x, y, onHotbar);
 		return true;
 	}
 
-	private void renderTextAt(String text, int color, int x, int y, float scaleFactor, boolean isOnHotbar) {
+	private void renderTextAt(ItemCountsConfig.ItemRenderConfig config,
+							  String text, int color, int x, int y, boolean isOnHotbar) {
+		float scaleFactor = config.offset.textScale;
 		TextRenderer renderer = client.textRenderer;
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor, 250);
@@ -94,7 +96,7 @@ public abstract class InGameHudMixin {
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 		renderer.draw(
 				text,
-				(x / scaleFactor) - (renderer.getWidth(text) / 2f),
+				config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, renderer),
 				(y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2),
 				color >= 0 ? color : 16777215,
 				true,
