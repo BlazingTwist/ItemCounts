@@ -1,10 +1,12 @@
 package blazingtwist.itemcounts.config;
 
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 
 @Config(name = "itemcounts")
 public class ItemCountsConfig implements ConfigData {
@@ -136,7 +138,28 @@ public class ItemCountsConfig implements ConfigData {
 		public boolean separateName = false;
 		public boolean separateDurability = false;
 
-		public boolean countStacksSeparately(ItemStack a, ItemStack b) {
+		public int getTotalItemCount(PlayerEntity player, ItemStack stack) {
+			return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
+					.filter(other -> mergeStackCounts(stack, other))
+					.mapToInt(ItemStack::getCount)
+					.sum();
+		}
+
+		public int getHotbarItemCount(PlayerEntity player, ItemStack stack) {
+			Stream<ItemStack> hotbarStacks = IntStream.range(0, 9)
+					.mapToObj(i -> player.getInventory().main.get(i));
+
+			return Stream.concat(hotbarStacks, player.getInventory().offHand.stream())
+					.filter(other -> mergeStackCounts(stack, other))
+					.mapToInt(ItemStack::getCount)
+					.sum();
+		}
+
+		private boolean mergeStackCounts(ItemStack a, ItemStack b) {
+			return b.isItemEqual(a) && !countStacksSeparately(a, b);
+		}
+
+		private boolean countStacksSeparately(ItemStack a, ItemStack b) {
 			return (separateNbtData && !nbtDataMatches(a, b))
 					|| (separateName && !nameMatches(a, b))
 					|| (separateDurability && !durabilityMatches(a, b));
