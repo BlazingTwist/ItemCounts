@@ -10,8 +10,5 @@ Built for version 1.19.3
 Requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api), [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) and optionally [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu)
 
 # Configuration
-Using the configuration, you can modify these options for MainHandItems, OffHandItems and other hotbarItems individually:
-* Enable / Disable ItemCounts
-* Scale the overlay
-* Enable / Disable displaying the items icon next to the counter
-* Move the overlay to a different position on screen
+
+To learn about how to configure ItemCounts, check the [wiki](https://github.com/BlazingTwist/ItemCounts/wiki)
