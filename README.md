@@ -12,3 +12,12 @@ Requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api), 
 # Configuration
 
 To learn about how to configure ItemCounts, check the [wiki](https://github.com/BlazingTwist/ItemCounts/wiki)
+
+# Contribute
+
+**Issues** - Feature requests and bug reports are welcome.
+
+**Pull requests** - You fixed an issue or added a feature? Very cool, thank you!
+
+[**Kofi**](https://ko-fi.com/blazingtwist0016) - My work is free for everyone, so if you want to help me pay my bills (and can afford it),
+you can support me directly here.
