@@ -15,7 +15,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -102,9 +102,11 @@ public abstract class InGameHudMixin {
 				true,
 				matrixStack.peek().getPositionMatrix(),
 				immediate,
-				false,
+				TextRenderer.TextLayerType.NORMAL,
 				0,
-				15728880);
+				15728880,
+				false
+		);
 		immediate.draw();
 	}
 
@@ -133,7 +135,7 @@ public abstract class InGameHudMixin {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		itemRenderer.renderItem(item, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		itemRenderer.renderItem(item, ModelTransformationMode.GUI, false, matrixStack2, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {
@@ -144,8 +146,16 @@ public abstract class InGameHudMixin {
 		RenderSystem.applyModelViewMatrix();
 	}
 
-	@Inject(method = "renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V", at = @At("HEAD"))
-	public void onRenderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
+	@Inject(method = "renderHotbarItem(" +
+			"Lnet/minecraft/client/util/math/MatrixStack" +
+			"I" +
+			"I" +
+			"F" +
+			"Lnet/minecraft/entity/player/PlayerEntity;" +
+			"Lnet/minecraft/item/ItemStack;" +
+			"I" +
+			")V", at = @At("HEAD"))
+	public void onRenderHotbarItem(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
 		}
