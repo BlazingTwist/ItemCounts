@@ -9,6 +9,8 @@ Built for version 1.19.3
 
 Requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api), [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) and optionally [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu)
 
+For easy installation, check the [supported versions](https://github.com/BlazingTwist/ItemCounts/wiki/Tested-Versions).
+
 # Configuration
 
 To learn about how to configure ItemCounts, check the [wiki](https://github.com/BlazingTwist/ItemCounts/wiki)
