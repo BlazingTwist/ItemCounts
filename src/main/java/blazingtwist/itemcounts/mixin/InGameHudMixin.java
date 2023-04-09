@@ -147,7 +147,7 @@ public abstract class InGameHudMixin {
 	}
 
 	@Inject(method = "renderHotbarItem(" +
-			"Lnet/minecraft/client/util/math/MatrixStack" +
+			"Lnet/minecraft/client/util/math/MatrixStack;" +
 			"I" +
 			"I" +
 			"F" +
