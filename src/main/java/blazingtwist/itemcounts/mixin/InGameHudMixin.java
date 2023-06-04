@@ -2,6 +2,7 @@ package blazingtwist.itemcounts.mixin;
 
 import blazingtwist.itemcounts.ItemCounts;
 import blazingtwist.itemcounts.config.ItemCountsConfig;
+import blazingtwist.itemcounts.util.ColorHelper;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -30,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
+
 	@Shadow
 	@Final
 	private MinecraftClient client;
@@ -70,13 +72,23 @@ public abstract class InGameHudMixin {
 			if (!config.durabilityOption.shouldShowDurability(stack)) {
 				return false;
 			}
-			text = "" + (stack.getMaxDamage() - stack.getDamage());
-			color = stack.getItemBarColor();
+			int maxDamage = stack.getMaxDamage();
+			int currentDamage = stack.getDamage();
+			text = "" + (maxDamage - currentDamage);
+			if (config.colors.enableCustomColors) {
+				float damageFraction = ((float) currentDamage) / maxDamage;
+				color = ColorHelper.lerpColor(damageFraction, config.colors.colorDurabilityHigh, config.colors.colorDurabilityLow);
+			} else {
+				color = stack.getItemBarColor();
+			}
 		} else {
 			if (!config.countOption.shouldShowCount(player, stack)) {
 				return false;
 			}
 			text = "" + ItemCounts.getConfig().item_count_rules.getTotalItemCount(player, stack);
+			if (config.colors.enableCustomColors) {
+				color = config.colors.colorItemCount;
+			}
 		}
 
 		renderTextAt(config, text, color, x, y, onHotbar);
@@ -174,4 +186,5 @@ public abstract class InGameHudMixin {
 
 		renderItemOverlay(config.hotbar_relativeToHotbarConfig, true, player, stack, x, y);
 	}
+
 }
