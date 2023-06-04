@@ -105,6 +105,9 @@ public class ItemCountsConfig implements ConfigData {
 		public IconDisplayOption iconOption = IconDisplayOption.NEVER;
 		@ConfigEntry.Gui.CollapsibleObject()
 		public HudOffset offset = new HudOffset(0, -5, 0.75f);
+		@ConfigEntry.Gui.CollapsibleObject()
+		public HudColors colors = new HudColors();
+
 	}
 
 	public static class HudOffset {
@@ -122,6 +125,20 @@ public class ItemCountsConfig implements ConfigData {
 		public int y = 0;
 		public float textScale = 1f;
 		public TextAnchorOption anchor = TextAnchorOption.CENTER;
+	}
+
+	public static class HudColors {
+		@AutoConfigConstructor
+		public HudColors() {
+		}
+
+		public boolean enableCustomColors;
+		@ConfigEntry.ColorPicker
+		public int colorItemCount = 0xffffff;
+		@ConfigEntry.ColorPicker
+		public int colorDurabilityHigh = 0x00ff00;
+		@ConfigEntry.ColorPicker
+		public int colorDurabilityLow = 0xff0000;
 	}
 
 	public static class ItemCountSeparationRules {
