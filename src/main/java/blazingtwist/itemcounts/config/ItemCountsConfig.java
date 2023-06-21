@@ -174,7 +174,7 @@ public class ItemCountsConfig implements ConfigData {
 		}
 
 		private boolean mergeStackCounts(ItemStack a, ItemStack b) {
-			return b.isItemEqual(a) && !countStacksSeparately(a, b);
+			return ItemStack.areItemsEqual(a, b) && !countStacksSeparately(a, b);
 		}
 
 		private boolean countStacksSeparately(ItemStack a, ItemStack b) {
