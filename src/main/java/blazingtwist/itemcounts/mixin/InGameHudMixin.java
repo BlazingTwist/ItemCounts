@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
@@ -159,7 +160,7 @@ public abstract class InGameHudMixin {
 	}
 
 	@Inject(method = "renderHotbarItem(" +
-			"Lnet/minecraft/client/util/math/MatrixStack;" +
+			"Lnet/minecraft/client/gui/DrawContext;" +
 			"I" +
 			"I" +
 			"F" +
@@ -167,7 +168,7 @@ public abstract class InGameHudMixin {
 			"Lnet/minecraft/item/ItemStack;" +
 			"I" +
 			")V", at = @At("HEAD"))
-	public void onRenderHotbarItem(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
+	public void onRenderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
 		}
