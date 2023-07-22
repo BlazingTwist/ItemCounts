@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1
