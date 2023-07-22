@@ -11,6 +11,8 @@ public class ItemCounts implements ModInitializer {
 	public static final float FONT_Y_OFFSET = 8;
 	public static final float HOTBAR_X_OFFSET = 8;
 
+	public static boolean mixin_drawItemCalledFromRenderHotbarItem;
+
 	private static ConfigHolder<ItemCountsConfig> configHolder;
 
 	public static ItemCountsConfig getConfig(){

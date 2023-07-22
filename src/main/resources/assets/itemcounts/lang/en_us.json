@@ -93,5 +93,6 @@
   "text.autoconfig.itemcounts.option.item_count_rules": "Configure how items are counted",
   "text.autoconfig.itemcounts.option.item_count_rules.separateNbtData": "separate item-count by item NBT tags",
   "text.autoconfig.itemcounts.option.item_count_rules.separateName": "separate item-count by item name",
-  "text.autoconfig.itemcounts.option.item_count_rules.separateDurability": "separate item-count by remaining durability"
+  "text.autoconfig.itemcounts.option.item_count_rules.separateDurability": "separate item-count by remaining durability",
+  "text.autoconfig.itemcounts.option.show_vanilla_count": "Show the vanilla item-counts"
 }
