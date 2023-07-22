@@ -4,38 +4,40 @@ import blazingtwist.itemcounts.ItemCounts;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Environment(EnvType.CLIENT)
-@Mixin(DrawContext.class)
+@Mixin(ItemRenderer.class)
 public abstract class DrawContextMixin {
 
 	@Redirect(
-			method = "drawItemInSlot(" +
+			method = "renderGuiItemOverlay(" +
+					"Lnet/minecraft/client/util/math/MatrixStack;" +
 					"Lnet/minecraft/client/font/TextRenderer;" +
 					"Lnet/minecraft/item/ItemStack;" +
 					"I" +
 					"I" +
-					"Ljava/lang/String;" +
 					")V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;" +
-							"drawText(" +
+					target = "Lnet/minecraft/client/render/item/ItemRenderer;" +
+							"renderGuiItemOverlay(" +
+							"Lnet/minecraft/client/util/math/MatrixStack;" +
 							"Lnet/minecraft/client/font/TextRenderer;" +
+							"Lnet/minecraft/item/ItemStack;" +
+							"I" +
+							"I" +
 							"Ljava/lang/String;" +
-							"I" +
-							"I" +
-							"I" +
-							"Z" +
-							")I",
+							")V",
 					remap = false)
 	)
-	private int redirectDrawItemSlotText(
-			DrawContext instance, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow
+	private void redirectDrawItemSlotText(
+			ItemRenderer instance, MatrixStack matrixStack, TextRenderer textRenderer, ItemStack stack, int x, int y, String textOverride
 	) {
 		boolean isCalledFromHotbarRenderItem = ItemCounts.mixin_drawItemCalledFromRenderHotbarItem;
 		if (ItemCounts.mixin_drawItemCalledFromRenderHotbarItem) {
@@ -43,10 +45,10 @@ public abstract class DrawContextMixin {
 		}
 
 		if (isCalledFromHotbarRenderItem && !ItemCounts.getConfig().show_vanilla_count) {
-			return 0;
+			instance.renderGuiItemOverlay(matrixStack, textRenderer, stack, x, y, "");
+		} else {
+			instance.renderGuiItemOverlay(matrixStack, textRenderer, stack, x, y, textOverride);
 		}
-
-		return instance.drawText(textRenderer, text, x, y, color, shadow);
 	}
 
 }
