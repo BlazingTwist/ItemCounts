@@ -189,7 +189,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(
 			method = "renderHotbarItem(" +
-					"Lnet/minecraft/client/gui/DrawContext;" +
+					"Lnet/minecraft/client/util/math/MatrixStack;" +
 					"I" +
 					"I" +
 					"F" +
@@ -199,8 +199,9 @@ public abstract class InGameHudMixin {
 					")V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;" +
-							"drawItemInSlot(" +
+					target = "Lnet/minecraft/client/render/item/ItemRenderer;" +
+							"renderGuiItemOverlay(" +
+							"Lnet/minecraft/client/util/math/MatrixStack;" +
 							"Lnet/minecraft/client/font/TextRenderer;" +
 							"Lnet/minecraft/item/ItemStack;" +
 							"I" +
@@ -210,7 +211,7 @@ public abstract class InGameHudMixin {
 			)
 	)
 	private void onBefore_drawHotbarItem_call_drawItemInSlot(
-			DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
+			MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
 	) {
 		ItemCounts.mixin_drawItemCalledFromRenderHotbarItem = true;
 	}
