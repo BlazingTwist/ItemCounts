@@ -166,7 +166,7 @@ public abstract class InGameHudMixin {
 			"Lnet/minecraft/entity/player/PlayerEntity;" +
 			"Lnet/minecraft/item/ItemStack;" +
 			"I" +
-			")V", at = @At("HEAD"))
+			")V", at = @At("TAIL"))
 	public void onRenderHotbarItem(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
@@ -185,6 +185,34 @@ public abstract class InGameHudMixin {
 		}
 
 		renderItemOverlay(config.hotbar_relativeToHotbarConfig, true, player, stack, x, y);
+	}
+
+	@Inject(
+			method = "renderHotbarItem(" +
+					"Lnet/minecraft/client/gui/DrawContext;" +
+					"I" +
+					"I" +
+					"F" +
+					"Lnet/minecraft/entity/player/PlayerEntity;" +
+					"Lnet/minecraft/item/ItemStack;" +
+					"I" +
+					")V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/DrawContext;" +
+							"drawItemInSlot(" +
+							"Lnet/minecraft/client/font/TextRenderer;" +
+							"Lnet/minecraft/item/ItemStack;" +
+							"I" +
+							"I" +
+							")V",
+					shift = At.Shift.BEFORE
+			)
+	)
+	private void onBefore_drawHotbarItem_call_drawItemInSlot(
+			DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
+	) {
+		ItemCounts.mixin_drawItemCalledFromRenderHotbarItem = true;
 	}
 
 }
