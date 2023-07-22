@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +16,6 @@ public abstract class DrawContextMixin {
 
 	@Redirect(
 			method = "renderGuiItemOverlay(" +
-					"Lnet/minecraft/client/util/math/MatrixStack;" +
 					"Lnet/minecraft/client/font/TextRenderer;" +
 					"Lnet/minecraft/item/ItemStack;" +
 					"I" +
@@ -27,7 +25,6 @@ public abstract class DrawContextMixin {
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/render/item/ItemRenderer;" +
 							"renderGuiItemOverlay(" +
-							"Lnet/minecraft/client/util/math/MatrixStack;" +
 							"Lnet/minecraft/client/font/TextRenderer;" +
 							"Lnet/minecraft/item/ItemStack;" +
 							"I" +
@@ -37,7 +34,7 @@ public abstract class DrawContextMixin {
 					remap = false)
 	)
 	private void redirectDrawItemSlotText(
-			ItemRenderer instance, MatrixStack matrixStack, TextRenderer textRenderer, ItemStack stack, int x, int y, String textOverride
+			ItemRenderer instance, TextRenderer textRenderer, ItemStack stack, int x, int y, String textOverride
 	) {
 		boolean isCalledFromHotbarRenderItem = ItemCounts.mixin_drawItemCalledFromRenderHotbarItem;
 		if (ItemCounts.mixin_drawItemCalledFromRenderHotbarItem) {
@@ -45,9 +42,9 @@ public abstract class DrawContextMixin {
 		}
 
 		if (isCalledFromHotbarRenderItem && !ItemCounts.getConfig().show_vanilla_count) {
-			instance.renderGuiItemOverlay(matrixStack, textRenderer, stack, x, y, "");
+			instance.renderGuiItemOverlay(textRenderer, stack, x, y, "");
 		} else {
-			instance.renderGuiItemOverlay(matrixStack, textRenderer, stack, x, y, textOverride);
+			instance.renderGuiItemOverlay(textRenderer, stack, x, y, textOverride);
 		}
 	}
 
