@@ -81,6 +81,9 @@ public class ItemCountsConfig implements ConfigData {
 			false
 	);
 
+	@ConfigEntry.Category("rules")
+	public boolean show_vanilla_count = true;
+
 	public static class ItemRenderConfig {
 		@AutoConfigConstructor
 		public ItemRenderConfig() {
