@@ -30,8 +30,8 @@ public abstract class DrawContextMixin {
 							"I" +
 							"I" +
 							"Ljava/lang/String;" +
-							")V",
-					remap = false)
+							")V"
+			)
 	)
 	private void redirectDrawItemSlotText(
 			ItemRenderer instance, TextRenderer textRenderer, ItemStack stack, int x, int y, String textOverride
