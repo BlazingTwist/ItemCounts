@@ -31,8 +31,8 @@ public abstract class DrawContextMixin {
 							"I" +
 							"I" +
 							"Z" +
-							")I",
-					remap = false)
+							")I"
+			)
 	)
 	private int redirectDrawItemSlotText(
 			DrawContext instance, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow
