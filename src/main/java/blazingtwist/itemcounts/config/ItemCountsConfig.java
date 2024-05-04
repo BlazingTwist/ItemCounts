@@ -2,6 +2,7 @@ package blazingtwist.itemcounts.config;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -187,14 +188,7 @@ public class ItemCountsConfig implements ConfigData {
 		}
 
 		private boolean nbtDataMatches(ItemStack a, ItemStack b) {
-			if (a.hasNbt() != b.hasNbt()) {
-				return false;
-			}
-			if (!a.hasNbt() || a.getNbt() == null) {
-				// neither itemStack has NBT data
-				return true;
-			}
-			return a.getNbt().equals(b.getNbt());
+			return a.getComponents().equals(b.getComponents());
 		}
 
 		private boolean nameMatches(ItemStack a, ItemStack b) {
