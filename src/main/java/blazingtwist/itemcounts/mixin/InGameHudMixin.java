@@ -11,6 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
@@ -145,12 +146,12 @@ public abstract class InGameHudMixin {
 			"Lnet/minecraft/client/gui/DrawContext;" +
 			"I" +
 			"I" +
-			"F" +
+			"Lnet/minecraft/client/render/RenderTickCounter;" +
 			"Lnet/minecraft/entity/player/PlayerEntity;" +
 			"Lnet/minecraft/item/ItemStack;" +
 			"I" +
 			")V", at = @At("TAIL"))
-	public void onRenderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
+	public void onRenderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -175,7 +176,7 @@ public abstract class InGameHudMixin {
 					"Lnet/minecraft/client/gui/DrawContext;" +
 					"I" +
 					"I" +
-					"F" +
+					"Lnet/minecraft/client/render/RenderTickCounter;" +
 					"Lnet/minecraft/entity/player/PlayerEntity;" +
 					"Lnet/minecraft/item/ItemStack;" +
 					"I" +
@@ -193,7 +194,7 @@ public abstract class InGameHudMixin {
 			)
 	)
 	private void onBefore_drawHotbarItem_call_drawItemInSlot(
-			DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
+			DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
 	) {
 		ItemCounts.mixin_drawItemCalledFromRenderHotbarItem = true;
 	}
