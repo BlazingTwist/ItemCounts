@@ -25,6 +25,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,9 +48,10 @@ public abstract class InGameHudMixin {
 	@Shadow
 	private int scaledHeight;
 
+	@Unique
 	private void renderItemOverlay(ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
 								   PlayerEntity player, ItemStack stack, int x, int y) {
-		if (!config.enabled) {
+		if (!config.isEnabled()) {
 			return;
 		}
 		if (!onHotbar) {
@@ -65,6 +67,7 @@ public abstract class InGameHudMixin {
 		}
 	}
 
+	@Unique
 	private boolean renderItemText(ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
 								   PlayerEntity player, ItemStack stack, int x, int y) {
 		String text;
@@ -96,6 +99,7 @@ public abstract class InGameHudMixin {
 		return true;
 	}
 
+	@Unique
 	private void renderTextAt(ItemCountsConfig.ItemRenderConfig config,
 							  String text, int color, int x, int y, boolean isOnHotbar) {
 		float scaleFactor = config.offset.textScale;
@@ -123,6 +127,7 @@ public abstract class InGameHudMixin {
 		immediate.draw();
 	}
 
+	@Unique
 	private void renderItemAt(ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar) {
 		//textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 		RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
