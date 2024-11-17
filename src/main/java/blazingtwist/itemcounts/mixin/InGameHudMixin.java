@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,9 +35,10 @@ public abstract class InGameHudMixin {
 	@Final
 	private MinecraftClient client;
 
+	@Unique
 	private void renderItemOverlay(DrawContext context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
 								   PlayerEntity player, ItemStack stack, int x, int y) {
-		if (!config.enabled) {
+		if (!config.isEnabled()) {
 			return;
 		}
 		if (!onHotbar) {
@@ -55,6 +57,7 @@ public abstract class InGameHudMixin {
 		}
 	}
 
+	@Unique
 	private boolean shouldRenderItem(ItemCountsConfig.ItemRenderConfig config, PlayerEntity player, ItemStack stack) {
 		if (stack.isDamageable() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
 			return config.durabilityOption.shouldShowDurability(stack);
@@ -63,6 +66,7 @@ public abstract class InGameHudMixin {
 		}
 	}
 
+	@Unique
 	private void renderItemText(DrawContext context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
 								PlayerEntity player, ItemStack stack, int x, int y) {
 		final String text;
@@ -85,6 +89,7 @@ public abstract class InGameHudMixin {
 		renderTextAt(context, config, text, color, x, y, onHotbar);
 	}
 
+	@Unique
 	private void renderTextAt(DrawContext context, ItemCountsConfig.ItemRenderConfig config,
 							  String text, int color, int x, int y, boolean isOnHotbar) {
 		float scaleFactor = config.offset.textScale;
@@ -114,6 +119,7 @@ public abstract class InGameHudMixin {
 		matrices.pop();
 	}
 
+	@Unique
 	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar) {
 		ItemRenderer itemRenderer = client.getItemRenderer();
 		BakedModel model = itemRenderer.getModel(item, null, null, 0);
