@@ -6,7 +6,6 @@ import blazingtwist.itemcounts.util.ColorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.DiffuseLighting;
@@ -15,10 +14,10 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -101,19 +100,13 @@ public abstract class InGameHudMixin {
 		}
 		matrices.scale(scaleFactor, scaleFactor, 1);
 
-		TextRenderer renderer = client.textRenderer;
-		renderer.draw(
+		context.drawText(
+				client.textRenderer,
 				text,
-				config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, client.textRenderer),
-				(y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2),
+				(int) (config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, client.textRenderer)),
+				(int) ((y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2)),
 				color >= 0 ? color : 16777215,
-				true,
-				matrices.peek().getPositionMatrix(),
-				context.getVertexConsumers(),
-				TextRenderer.TextLayerType.NORMAL,
-				0,
-				15728880,
-				renderer.isRightToLeft()
+				true
 		);
 
 		matrices.pop();
@@ -190,7 +183,7 @@ public abstract class InGameHudMixin {
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/DrawContext;" +
-							"drawItemInSlot(" +
+							"drawStackOverlay(" +
 							"Lnet/minecraft/client/font/TextRenderer;" +
 							"Lnet/minecraft/item/ItemStack;" +
 							"I" +

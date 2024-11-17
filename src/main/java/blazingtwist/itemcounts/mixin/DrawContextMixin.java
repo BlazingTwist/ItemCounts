@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class DrawContextMixin {
 
 	@Redirect(
-			method = "drawItemInSlot(" +
+			method = "drawStackCount(" +
 					"Lnet/minecraft/client/font/TextRenderer;" +
 					"Lnet/minecraft/item/ItemStack;" +
 					"I" +
