@@ -44,7 +44,7 @@ public class ItemCounts implements ClientModInitializer {
 			int keyDef = getUnsafe(field, defaults, -1);
 
 			return Collections.singletonList(entry
-					.startKeyCodeField(net.minecraft.text.Text.translatable(i13n), key > 0 ? InputUtil.fromKeyCode(key, -1) : InputUtil.UNKNOWN_KEY)
+					.startKeyCodeField(new net.minecraft.text.TranslatableText(i13n), key > 0 ? InputUtil.fromKeyCode(key, -1) : InputUtil.UNKNOWN_KEY)
 					.setDefaultValue(keyDef > 0 ? InputUtil.fromKeyCode(keyDef, -1) : InputUtil.UNKNOWN_KEY)
 					.setKeySaveConsumer(saveKey -> setUnsafe(field, config, saveKey.getCode()))
 					.build()
