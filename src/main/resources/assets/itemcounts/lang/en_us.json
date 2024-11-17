@@ -7,6 +7,8 @@
 
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig": "Configure overlay relative to hotbar for active item",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.enabled": "enable this overlay",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.toggleKeyCode": "Hotkey: toggle overlay",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.holdKeyCode": "Hotkey: enable/disable while held",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.countOption": "Show item-count",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.durabilityFilter": "Tools of this Type show durability instead of item-count",
   "text.autoconfig.itemcounts.option.mainHand_relativeToHotbarConfig.durabilityOption": "Show durability",
@@ -24,6 +26,8 @@
 
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig": "Configure overlay relative to crosshair for active item",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.enabled": "enable this overlay",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.toggleKeyCode": "Hotkey: toggle overlay",
+  "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.holdKeyCode": "Hotkey: enable/disable while held",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.countOption": "Show item-count",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.durabilityFilter": "Tools of this Type show durability instead of item-count",
   "text.autoconfig.itemcounts.option.mainHand_relativeToCrosshairConfig.durabilityOption": "Show durability",
@@ -41,6 +45,8 @@
 
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig": "Configure overlay relative to hotbar for offhand item",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.enabled": "enable this overlay",
+  "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.toggleKeyCode": "Hotkey: toggle overlay",
+  "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.holdKeyCode": "Hotkey: enable/disable while held",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.countOption": "Show item-count",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.durabilityFilter": "Tools of this Type show durability instead of item-count",
   "text.autoconfig.itemcounts.option.offHand_relativeToHotbarConfig.durabilityOption": "Show durability",
@@ -58,6 +64,8 @@
 
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig": "Configure overlay relative to crosshair for offhand item",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.enabled": "enable this overlay",
+  "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.toggleKeyCode": "Hotkey: toggle overlay",
+  "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.holdKeyCode": "Hotkey: enable/disable while held",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.countOption": "Show item-count",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.durabilityFilter": "Tools of this Type show durability instead of item-count",
   "text.autoconfig.itemcounts.option.offHand_relativeToCrosshairConfig.durabilityOption": "Show durability",
@@ -75,6 +83,8 @@
 
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig": "Configure overlay relative to hotbar for hotbar items",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.enabled": "enable this overlay",
+  "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.toggleKeyCode": "Hotkey: toggle overlay",
+  "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.holdKeyCode": "Hotkey: enable/disable while held",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.countOption": "Show item-count",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.durabilityFilter": "Tools of this Type show durability instead of item-count",
   "text.autoconfig.itemcounts.option.hotbar_relativeToHotbarConfig.durabilityOption": "Show durability",

@@ -1,13 +1,14 @@
 package blazingtwist.itemcounts.config;
 
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Config(name = "itemcounts")
 public class ItemCountsConfig implements ConfigData {
@@ -103,6 +104,10 @@ public class ItemCountsConfig implements ConfigData {
 		}
 
 		public boolean enabled = false;
+		@AutoConfigKeybind
+		public int toggleKeyCode = -1;
+		@AutoConfigKeybind
+		public int holdKeyCode = -1;
 		public CountDisplayOption countOption = CountDisplayOption.NEVER;
 		public DurabilityItemOption durabilityFilter = DurabilityItemOption.NONE;
 		public DurabilityDisplayOption durabilityOption = DurabilityDisplayOption.NEVER;
@@ -111,6 +116,30 @@ public class ItemCountsConfig implements ConfigData {
 		public HudOffset offset = new HudOffset(0, -5, 0.75f);
 		@ConfigEntry.Gui.CollapsibleObject()
 		public HudColors colors = new HudColors();
+
+		@ConfigEntry.Gui.Excluded
+		private boolean toggleKeyActive = false;
+		@ConfigEntry.Gui.Excluded
+		private boolean wasToggleKeyDown = false;
+		@ConfigEntry.Gui.Excluded
+		private boolean wasHoldKeyDown = false;
+
+		public boolean isEnabled() {
+			return enabled ^ toggleKeyActive ^ wasHoldKeyDown;
+		}
+
+		public void handleKeys(long windowHandle) {
+			if (toggleKeyCode > 0) {
+				boolean toggleKeyDown = InputUtil.isKeyPressed(windowHandle, toggleKeyCode);
+				if (toggleKeyDown && !wasToggleKeyDown) {
+					toggleKeyActive = !toggleKeyActive;
+				}
+				wasToggleKeyDown = toggleKeyDown;
+			}
+			if (holdKeyCode > 0) {
+				wasHoldKeyDown = InputUtil.isKeyPressed(windowHandle, holdKeyCode);
+			}
+		}
 
 	}
 
