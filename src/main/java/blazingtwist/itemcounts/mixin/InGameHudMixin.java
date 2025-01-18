@@ -12,12 +12,12 @@ import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,13 +30,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
 
+	private final ItemRenderState itemRenderState = new ItemRenderState();
+
 	@Shadow
 	@Final
 	private MinecraftClient client;
 
 	@Unique
 	private void renderItemOverlay(DrawContext context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
-								   PlayerEntity player, ItemStack stack, int x, int y) {
+								   PlayerEntity player, ItemStack stack, int x, int y, int seed) {
 		if (!config.isEnabled()) {
 			return;
 		}
@@ -52,7 +54,7 @@ public abstract class InGameHudMixin {
 			renderItemText(context, config, onHotbar, player, stack, x, y);
 		}
 		if (config.iconOption.shouldShowIcon(doRenderText)) {
-			renderItemAt(context, stack, x, y, config.offset.textScale, onHotbar);
+			renderItemAt(context, stack, x, y, config.offset.textScale, onHotbar, player, seed);
 		}
 	}
 
@@ -113,9 +115,9 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar) {
-		ItemRenderer itemRenderer = client.getItemRenderer();
-		BakedModel model = itemRenderer.getModel(item, null, null, 0);
+	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, PlayerEntity player, int seed) {
+		World world = player.getWorld();
+		client.getItemModelManager().update(itemRenderState, item, ModelTransformationMode.GUI, false, world, player, seed);
 
 		MatrixStack contextMatrices = context.getMatrices();
 		contextMatrices.push();
@@ -127,12 +129,12 @@ public abstract class InGameHudMixin {
 		contextMatrices.scale(scaleFactor, scaleFactor, scaleFactor);
 
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		boolean bl = !model.isSideLit();
+		boolean bl = !itemRenderState.isSideLit();
 		if (bl) {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		itemRenderer.renderItem(item, ModelTransformationMode.GUI, false, contextMatrices, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		itemRenderState.render(contextMatrices, immediate, 15728880, OverlayTexture.DEFAULT_UV);
 		immediate.draw();
 		if (bl) {
 			DiffuseLighting.enableGuiDepthLighting();
@@ -158,16 +160,16 @@ public abstract class InGameHudMixin {
 		ItemCountsConfig config = ItemCounts.getConfig();
 
 		if (player.getMainHandStack() == stack) {
-			renderItemOverlay(context, config.mainHand_relativeToCrosshairConfig, false, player, stack, x, y);
-			renderItemOverlay(context, config.mainHand_relativeToHotbarConfig, true, player, stack, x, y);
+			renderItemOverlay(context, config.mainHand_relativeToCrosshairConfig, false, player, stack, x, y, seed);
+			renderItemOverlay(context, config.mainHand_relativeToHotbarConfig, true, player, stack, x, y, seed);
 		}
 
 		if (player.getOffHandStack() == stack) {
-			renderItemOverlay(context, config.offHand_relativeToCrosshairConfig, false, player, stack, x, y);
-			renderItemOverlay(context, config.offHand_relativeToHotbarConfig, true, player, stack, x, y);
+			renderItemOverlay(context, config.offHand_relativeToCrosshairConfig, false, player, stack, x, y, seed);
+			renderItemOverlay(context, config.offHand_relativeToHotbarConfig, true, player, stack, x, y, seed);
 		}
 
-		renderItemOverlay(context, config.hotbar_relativeToHotbarConfig, true, player, stack, x, y);
+		renderItemOverlay(context, config.hotbar_relativeToHotbarConfig, true, player, stack, x, y, seed);
 	}
 
 	@Inject(
