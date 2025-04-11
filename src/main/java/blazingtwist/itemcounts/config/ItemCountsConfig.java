@@ -5,8 +5,10 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 
+import java.util.Collection;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -190,7 +192,9 @@ public class ItemCountsConfig implements ConfigData {
 		public boolean separateDurability = false;
 
 		public int getTotalItemCount(PlayerEntity player, ItemStack stack) {
-			return Stream.concat(player.getInventory().main.stream(), player.getInventory().offHand.stream())
+			PlayerInventory inventory = player.getInventory();
+			return Stream.of(inventory.main, inventory.offHand, inventory.armor)
+					.flatMap(Collection::stream)
 					.filter(other -> mergeStackCounts(stack, other))
 					.mapToInt(ItemStack::getCount)
 					.sum();
