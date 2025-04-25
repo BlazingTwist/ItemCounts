@@ -1,14 +1,15 @@
 package blazingtwist.itemcounts.config;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 
-import java.util.Collection;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -177,6 +178,12 @@ public class ItemCountsConfig implements ConfigData {
 	}
 
 	public static class ItemCountSeparationRules {
+		// still better than hard-coding '40' and getting sneaky errors when they inevitably change this again...
+		public static final int offHandSlotIdx = PlayerInventory.EQUIPMENT_SLOTS.int2ObjectEntrySet().stream()
+				.filter(e -> e.getValue() == EquipmentSlot.OFFHAND)
+				.map(Int2ObjectMap.Entry::getIntKey)
+				.findFirst().orElse(0);
+
 		@AutoConfigConstructor
 		public ItemCountSeparationRules() {
 		}
@@ -193,18 +200,18 @@ public class ItemCountsConfig implements ConfigData {
 
 		public int getTotalItemCount(PlayerEntity player, ItemStack stack) {
 			PlayerInventory inventory = player.getInventory();
-			return Stream.of(inventory.main, inventory.offHand, inventory.armor)
-					.flatMap(Collection::stream)
+			// Thank you Mojank for this crap. Your previous model was perfectly descriptive.
+			return IntStream.range(0, inventory.getMainStacks().size() + EquipmentSlot.values().length)
+					.mapToObj(inventory::getStack)
 					.filter(other -> mergeStackCounts(stack, other))
 					.mapToInt(ItemStack::getCount)
 					.sum();
 		}
 
 		public int getHotbarItemCount(PlayerEntity player, ItemStack stack) {
-			Stream<ItemStack> hotbarStacks = IntStream.range(0, 9)
-					.mapToObj(i -> player.getInventory().main.get(i));
-
-			return Stream.concat(hotbarStacks, player.getInventory().offHand.stream())
+			PlayerInventory inventory = player.getInventory();
+			return Stream.concat(IntStream.range(0, 9).boxed(), IntStream.of(offHandSlotIdx).boxed())
+					.map(inventory::getStack)
 					.filter(other -> mergeStackCounts(stack, other))
 					.mapToInt(ItemStack::getCount)
 					.sum();

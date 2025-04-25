@@ -15,8 +15,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -118,7 +118,7 @@ public abstract class InGameHudMixin {
 	@Unique
 	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, PlayerEntity player, int seed) {
 		World world = player.getWorld();
-		client.getItemModelManager().update(itemRenderState, item, ModelTransformationMode.GUI, false, world, player, seed);
+		client.getItemModelManager().update(itemRenderState, item, ItemDisplayContext.GUI, world, player, seed);
 
 		MatrixStack contextMatrices = context.getMatrices();
 		contextMatrices.push();
