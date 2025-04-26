@@ -179,6 +179,7 @@ public class ItemCountsConfig implements ConfigData {
 
 	public static class ItemCountSeparationRules {
 		// still better than hard-coding '40' and getting sneaky errors when they inevitably change this again...
+		@ConfigEntry.Gui.Excluded
 		public static final int offHandSlotIdx = PlayerInventory.EQUIPMENT_SLOTS.int2ObjectEntrySet().stream()
 				.filter(e -> e.getValue() == EquipmentSlot.OFFHAND)
 				.map(Int2ObjectMap.Entry::getIntKey)
