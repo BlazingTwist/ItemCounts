@@ -156,7 +156,7 @@ public abstract class InGameHudMixin {
 			"Lnet/minecraft/entity/player/PlayerEntity;" +
 			"Lnet/minecraft/item/ItemStack;" +
 			"I" +
-			")V", at = @At("TAIL"))
+			")V", at = @At("HEAD"), order = 999)
 	public void onRenderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
