@@ -8,16 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,9 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
-
-	@Unique
-	private final ItemRenderState itemRenderState = new ItemRenderState();
 
 	@Shadow
 	@Final
@@ -117,29 +108,16 @@ public abstract class InGameHudMixin {
 
 	@Unique
 	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, PlayerEntity player, int seed) {
-		World world = player.getWorld();
-		client.getItemModelManager().update(itemRenderState, item, ItemDisplayContext.GUI, world, player, seed);
-
 		MatrixStack contextMatrices = context.getMatrices();
 		contextMatrices.push();
-		contextMatrices.translate(x, y, 150f);
-		if (isOnHotbar) {
-			contextMatrices.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
-		}
-		contextMatrices.scale(16.0F, -16.0F, 16.0F);
 		contextMatrices.scale(scaleFactor, scaleFactor, scaleFactor);
 
-		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		boolean bl = !itemRenderState.isSideLit();
-		if (bl) {
-			DiffuseLighting.disableGuiDepthLighting();
+		if (isOnHotbar) {
+			contextMatrices.translate(ItemCounts.HOTBAR_X_OFFSET, 0, 0);
 		}
-
-		itemRenderState.render(contextMatrices, immediate, 15728880, OverlayTexture.DEFAULT_UV);
-		immediate.draw();
-		if (bl) {
-			DiffuseLighting.enableGuiDepthLighting();
-		}
+		int scaledX = ((int)(x / scaleFactor)) - 8; // -8 to offset the reapplied offset in 'drawItem'...
+		int scaledY = ((int)(y / scaleFactor)) - 8;
+		context.drawItem(player, item, scaledX, scaledY, seed);
 
 		contextMatrices.pop();
 	}
