@@ -9,9 +9,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,11 +42,11 @@ public abstract class InGameHudMixin {
 		y += config.offset.y;
 
 		boolean doRenderText = shouldRenderItem(config, player, stack);
-		if (doRenderText) {
-			renderItemText(context, config, onHotbar, player, stack, x, y);
-		}
 		if (config.iconOption.shouldShowIcon(doRenderText)) {
 			renderItemAt(context, stack, x, y, config.offset.textScale, onHotbar, player, seed);
+		}
+		if (doRenderText) {
+			renderItemText(context, config, onHotbar, player, stack, x, y);
 		}
 	}
 
@@ -86,40 +86,40 @@ public abstract class InGameHudMixin {
 	private void renderTextAt(DrawContext context, ItemCountsConfig.ItemRenderConfig config,
 							  String text, int color, int x, int y, boolean isOnHotbar) {
 		float scaleFactor = config.offset.textScale;
-		MatrixStack matrices = context.getMatrices();
-		matrices.push();
-		matrices.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor, 200f);
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor);
 		if (isOnHotbar) {
-			matrices.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0, 0);
+			matrices.translate(ItemCounts.HOTBAR_X_OFFSET * scaleFactor, 0);
 		}
-		matrices.scale(scaleFactor, scaleFactor, 1);
+		matrices.scale(scaleFactor, scaleFactor);
 
 		context.drawText(
 				client.textRenderer,
 				text,
 				(int) (config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, client.textRenderer)),
 				(int) ((y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2)),
-				color >= 0 ? color : 16777215,
+				color >= 0 ? (0xff000000 | color) : -1,
 				true
 		);
 
-		matrices.pop();
+		matrices.popMatrix();
 	}
 
 	@Unique
 	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, PlayerEntity player, int seed) {
-		MatrixStack contextMatrices = context.getMatrices();
-		contextMatrices.push();
-		contextMatrices.scale(scaleFactor, scaleFactor, scaleFactor);
+		Matrix3x2fStack contextMatrices = context.getMatrices();
+		contextMatrices.pushMatrix();
+		contextMatrices.scale(scaleFactor, scaleFactor);
 
 		if (isOnHotbar) {
-			contextMatrices.translate(ItemCounts.HOTBAR_X_OFFSET, 0, 0);
+			contextMatrices.translate(ItemCounts.HOTBAR_X_OFFSET, 0);
 		}
-		int scaledX = ((int)(x / scaleFactor)) - 8; // -8 to offset the reapplied offset in 'drawItem'...
-		int scaledY = ((int)(y / scaleFactor)) - 8;
+		int scaledX = ((int) (x / scaleFactor)) - 8; // -8 to offset the reapplied offset in 'drawItem'...
+		int scaledY = ((int) (y / scaleFactor)) - 8;
 		context.drawItem(player, item, scaledX, scaledY, seed);
 
-		contextMatrices.pop();
+		contextMatrices.popMatrix();
 	}
 
 	@Inject(method = "renderHotbarItem(" +
@@ -130,7 +130,7 @@ public abstract class InGameHudMixin {
 			"Lnet/minecraft/entity/player/PlayerEntity;" +
 			"Lnet/minecraft/item/ItemStack;" +
 			"I" +
-			")V", at = @At("HEAD"), order = 999)
+			")V", at = @At("TAIL"), order = 999)
 	public void onRenderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
