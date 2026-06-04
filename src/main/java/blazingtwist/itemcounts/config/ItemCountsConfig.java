@@ -158,7 +158,7 @@ public class ItemCountsConfig implements ConfigData {
 			this.textScale = textScale;
 		}
 
-		public int x = 0; // TODO blazingtwist - for some reason these are readonly in modmenu
+		public int x = 0;
 		public int y = 0;
 		public float textScale = 1f;
 		public TextAnchorOption anchor = TextAnchorOption.CENTER;
