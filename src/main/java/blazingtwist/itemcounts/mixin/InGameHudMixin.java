@@ -5,12 +5,12 @@ import blazingtwist.itemcounts.config.ItemCountsConfig;
 import blazingtwist.itemcounts.util.ColorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,22 +21,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class InGameHudMixin {
 
 	@Shadow
 	@Final
-	private MinecraftClient client;
+	private Minecraft minecraft;
 
 	@Unique
-	private void renderItemOverlay(DrawContext context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
-								   PlayerEntity player, ItemStack stack, int x, int y, int seed) {
+	private void renderItemOverlay(GuiGraphicsExtractor context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
+								   Player player, ItemStack stack, int x, int y, int seed) {
 		if (!config.isEnabled()) {
 			return;
 		}
 		if (!onHotbar) {
-			x = context.getScaledWindowWidth() / 2;
-			y = context.getScaledWindowHeight() / 2;
+			x = context.guiWidth() / 2;
+			y = context.guiHeight() / 2;
 		}
 		x += config.offset.x;
 		y += config.offset.y;
@@ -51,8 +51,8 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private boolean shouldRenderItem(ItemCountsConfig.ItemRenderConfig config, PlayerEntity player, ItemStack stack) {
-		if (stack.isDamageable() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
+	private boolean shouldRenderItem(ItemCountsConfig.ItemRenderConfig config, Player player, ItemStack stack) {
+		if (stack.isDamageableItem() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
 			return config.durabilityOption.shouldShowDurability(stack);
 		} else {
 			return config.countOption.shouldShowCount(player, stack);
@@ -60,19 +60,19 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private void renderItemText(DrawContext context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
-								PlayerEntity player, ItemStack stack, int x, int y) {
+	private void renderItemText(GuiGraphicsExtractor context, ItemCountsConfig.ItemRenderConfig config, boolean onHotbar,
+								Player player, ItemStack stack, int x, int y) {
 		final String text;
 		final int color;
-		if (stack.isDamageable() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
+		if (stack.isDamageableItem() && config.durabilityFilter.showDurabilityInsteadOfItemCount(stack)) {
 			int maxDamage = stack.getMaxDamage();
-			int currentDamage = stack.getDamage();
+			int currentDamage = stack.getDamageValue();
 			text = "" + (maxDamage - currentDamage);
 			if (config.colors.enableCustomColors) {
 				float damageFraction = ((float) currentDamage) / maxDamage;
 				color = ColorHelper.lerpColor(damageFraction, config.colors.colorDurabilityHigh, config.colors.colorDurabilityLow);
 			} else {
-				color = stack.getItemBarColor();
+				color = stack.getBarColor();
 			}
 		} else {
 			text = "" + ItemCounts.getConfig().item_count_rules.getTotalItemCount(player, stack);
@@ -83,10 +83,10 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private void renderTextAt(DrawContext context, ItemCountsConfig.ItemRenderConfig config,
+	private void renderTextAt(GuiGraphicsExtractor context, ItemCountsConfig.ItemRenderConfig config,
 							  String text, int color, int x, int y, boolean isOnHotbar) {
 		float scaleFactor = config.offset.textScale;
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = context.pose();
 		matrices.pushMatrix();
 		matrices.translate(0, ItemCounts.FONT_Y_OFFSET * scaleFactor);
 		if (isOnHotbar) {
@@ -94,10 +94,10 @@ public abstract class InGameHudMixin {
 		}
 		matrices.scale(scaleFactor, scaleFactor);
 
-		context.drawText(
-				client.textRenderer,
+		context.text(
+				minecraft.font,
 				text,
-				(int) (config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, client.textRenderer)),
+				(int) (config.offset.anchor.applyAnchorOffset(x / scaleFactor, text, minecraft.font)),
 				(int) ((y / scaleFactor) - (ItemCounts.FONT_HEIGHT / 2)),
 				color >= 0 ? (0xff000000 | color) : -1,
 				true
@@ -107,8 +107,8 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private void renderItemAt(DrawContext context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, PlayerEntity player, int seed) {
-		Matrix3x2fStack contextMatrices = context.getMatrices();
+	private void renderItemAt(GuiGraphicsExtractor context, ItemStack item, int x, int y, float scaleFactor, boolean isOnHotbar, Player player, int seed) {
+		Matrix3x2fStack contextMatrices = context.pose();
 		contextMatrices.pushMatrix();
 		contextMatrices.scale(scaleFactor, scaleFactor);
 
@@ -117,33 +117,33 @@ public abstract class InGameHudMixin {
 		}
 		int scaledX = ((int) (x / scaleFactor)) - 8; // -8 to offset the reapplied offset in 'drawItem'...
 		int scaledY = ((int) (y / scaleFactor)) - 8;
-		context.drawItem(player, item, scaledX, scaledY, seed);
+		context.item(player, item, scaledX, scaledY, seed);
 
 		contextMatrices.popMatrix();
 	}
 
-	@Inject(method = "renderHotbarItem(" +
-			"Lnet/minecraft/client/gui/DrawContext;" +
+	@Inject(method = "extractSlot(" +
+			"Lnet/minecraft/client/gui/GuiGraphicsExtractor;" +
 			"I" +
 			"I" +
-			"Lnet/minecraft/client/render/RenderTickCounter;" +
-			"Lnet/minecraft/entity/player/PlayerEntity;" +
-			"Lnet/minecraft/item/ItemStack;" +
+			"Lnet/minecraft/client/DeltaTracker;" +
+			"Lnet/minecraft/world/entity/player/Player;" +
+			"Lnet/minecraft/world/item/ItemStack;" +
 			"I" +
 			")V", at = @At("TAIL"), order = 999)
-	public void onRenderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info) {
+	public void onRenderHotbarItem(GuiGraphicsExtractor context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed, CallbackInfo info) {
 		if (stack.isEmpty()) {
 			return;
 		}
 
 		ItemCountsConfig config = ItemCounts.getConfig();
 
-		if (player.getMainHandStack() == stack) {
+		if (player.getMainHandItem() == stack) {
 			renderItemOverlay(context, config.mainHand_relativeToCrosshairConfig, false, player, stack, x, y, seed);
 			renderItemOverlay(context, config.mainHand_relativeToHotbarConfig, true, player, stack, x, y, seed);
 		}
 
-		if (player.getOffHandStack() == stack) {
+		if (player.getOffhandItem() == stack) {
 			renderItemOverlay(context, config.offHand_relativeToCrosshairConfig, false, player, stack, x, y, seed);
 			renderItemOverlay(context, config.offHand_relativeToHotbarConfig, true, player, stack, x, y, seed);
 		}
@@ -152,21 +152,21 @@ public abstract class InGameHudMixin {
 	}
 
 	@Inject(
-			method = "renderHotbarItem(" +
-					"Lnet/minecraft/client/gui/DrawContext;" +
+			method = "extractSlot(" +
+					"Lnet/minecraft/client/gui/GuiGraphicsExtractor;" +
 					"I" +
 					"I" +
-					"Lnet/minecraft/client/render/RenderTickCounter;" +
-					"Lnet/minecraft/entity/player/PlayerEntity;" +
-					"Lnet/minecraft/item/ItemStack;" +
+					"Lnet/minecraft/client/DeltaTracker;" +
+					"Lnet/minecraft/world/entity/player/Player;" +
+					"Lnet/minecraft/world/item/ItemStack;" +
 					"I" +
 					")V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;" +
-							"drawStackOverlay(" +
-							"Lnet/minecraft/client/font/TextRenderer;" +
-							"Lnet/minecraft/item/ItemStack;" +
+					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;" +
+							"itemDecorations(" +
+							"Lnet/minecraft/client/gui/Font;" +
+							"Lnet/minecraft/world/item/ItemStack;" +
 							"I" +
 							"I" +
 							")V",
@@ -174,7 +174,7 @@ public abstract class InGameHudMixin {
 			)
 	)
 	private void onBefore_drawHotbarItem_call_drawItemInSlot(
-			DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo info
+			GuiGraphicsExtractor context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed, CallbackInfo info
 	) {
 		ItemCounts.mixin_drawItemCalledFromRenderHotbarItem = true;
 	}

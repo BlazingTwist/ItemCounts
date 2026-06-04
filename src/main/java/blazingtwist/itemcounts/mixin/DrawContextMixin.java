@@ -3,29 +3,29 @@ package blazingtwist.itemcounts.mixin;
 import blazingtwist.itemcounts.ItemCounts;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Environment(EnvType.CLIENT)
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class DrawContextMixin {
 
 	@Redirect(
-			method = "drawStackCount(" +
-					"Lnet/minecraft/client/font/TextRenderer;" +
-					"Lnet/minecraft/item/ItemStack;" +
+			method = "itemCount(" +
+					"Lnet/minecraft/client/gui/Font;" +
+					"Lnet/minecraft/world/item/ItemStack;" +
 					"I" +
 					"I" +
 					"Ljava/lang/String;" +
 					")V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;" +
-							"drawText(" +
-							"Lnet/minecraft/client/font/TextRenderer;" +
+					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;" +
+							"text(" +
+							"Lnet/minecraft/client/gui/Font;" +
 							"Ljava/lang/String;" +
 							"I" +
 							"I" +
@@ -35,7 +35,7 @@ public abstract class DrawContextMixin {
 			)
 	)
 	private void redirectDrawItemSlotText(
-			DrawContext instance, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow
+			GuiGraphicsExtractor instance, Font font, String text, int x, int y, int color, boolean shadow
 	) {
 		boolean isCalledFromHotbarRenderItem = ItemCounts.mixin_drawItemCalledFromRenderHotbarItem;
 		if (ItemCounts.mixin_drawItemCalledFromRenderHotbarItem) {
@@ -43,7 +43,7 @@ public abstract class DrawContextMixin {
 		}
 
 		if (!isCalledFromHotbarRenderItem || ItemCounts.getConfig().show_vanilla_count) {
-			instance.drawText(textRenderer, text, x, y, color, shadow);
+			instance.text(font, text, x, y, color, shadow);
 		}
 
 	}

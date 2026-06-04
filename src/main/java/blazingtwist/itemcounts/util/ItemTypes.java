@@ -1,8 +1,8 @@
 package blazingtwist.itemcounts.util;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class ItemTypes {
 	public static final Item[] goldTools = {
@@ -30,10 +30,10 @@ public class ItemTypes {
 	};
 
 	public static boolean stackIsOfItem(ItemStack stack, Item[]... items) {
-		int rawItemID = Item.getRawId(stack.getItem());
+		int rawItemID = Item.getId(stack.getItem());
 		for (Item[] itemSubList : items) {
 			for (Item item : itemSubList) {
-				if (Item.getRawId(item) == rawItemID) {
+				if (Item.getId(item) == rawItemID) {
 					return true;
 				}
 			}

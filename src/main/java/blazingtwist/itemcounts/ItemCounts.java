@@ -2,14 +2,17 @@ package blazingtwist.itemcounts;
 
 import blazingtwist.itemcounts.config.AutoConfigKeybind;
 import blazingtwist.itemcounts.config.ItemCountsConfig;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.AutoConfigClient;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -37,16 +40,18 @@ public class ItemCounts implements ClientModInitializer {
 	}
 
 	private static void registerAutoconfigTypes() {
-		GuiRegistry configRegistry = AutoConfig.getGuiRegistry(ItemCountsConfig.class);
+		GuiRegistry configRegistry = AutoConfigClient.getGuiRegistry(ItemCountsConfig.class);
 		configRegistry.registerAnnotationProvider((i13n, field, config, defaults, guiProvider) -> {
 			ConfigEntryBuilder entry = ConfigEntryBuilder.create();
-			int key = getUnsafe(field, config, -1);
-			int keyDef = getUnsafe(field, defaults, -1);
+			int keyCode = getUnsafe(field, config, -1);
+			int keyDefCode = getUnsafe(field, defaults, -1);
+			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(keyCode);
+			InputConstants.Key keyDef = InputConstants.Type.KEYSYM.getOrCreate(keyDefCode);
 
 			return Collections.singletonList(entry
-					.startKeyCodeField(net.minecraft.text.Text.translatable(i13n), key > 0 ? InputUtil.fromKeyCode(key, -1) : InputUtil.UNKNOWN_KEY)
-					.setDefaultValue(keyDef > 0 ? InputUtil.fromKeyCode(keyDef, -1) : InputUtil.UNKNOWN_KEY)
-					.setKeySaveConsumer(saveKey -> setUnsafe(field, config, saveKey.getCode()))
+					.startKeyCodeField(Component.translatable(i13n), keyCode > 0 ? key : InputConstants.UNKNOWN)
+					.setDefaultValue(keyDefCode > 0 ? keyDef : InputConstants.UNKNOWN)
+					.setKeySaveConsumer(saveKey -> setUnsafe(field, config, saveKey.getValue()))
 					.build()
 			);
 		}, AutoConfigKeybind.class);
@@ -74,13 +79,13 @@ public class ItemCounts implements ClientModInitializer {
 
 	private static void registerKeybindListener() {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			long windowHandle = client.getWindow().getHandle();
+			Window window = client.getWindow();
 			ItemCountsConfig config = configHolder.get();
-			config.hotbar_relativeToHotbarConfig.handleKeys(windowHandle);
-			config.mainHand_relativeToCrosshairConfig.handleKeys(windowHandle);
-			config.mainHand_relativeToHotbarConfig.handleKeys(windowHandle);
-			config.offHand_relativeToCrosshairConfig.handleKeys(windowHandle);
-			config.offHand_relativeToHotbarConfig.handleKeys(windowHandle);
+			config.hotbar_relativeToHotbarConfig.handleKeys(window);
+			config.mainHand_relativeToCrosshairConfig.handleKeys(window);
+			config.mainHand_relativeToHotbarConfig.handleKeys(window);
+			config.offHand_relativeToCrosshairConfig.handleKeys(window);
+			config.offHand_relativeToHotbarConfig.handleKeys(window);
 		});
 	}
 }

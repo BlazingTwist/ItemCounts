@@ -1,13 +1,14 @@
 package blazingtwist.itemcounts.config;
 
 import blazingtwist.itemcounts.util.ItemTypes;
+import net.minecraft.world.item.ItemStack;
+
 import java.util.function.Function;
-import net.minecraft.item.ItemStack;
 
 public enum DurabilityItemOption {
 	@AutoConfigEnum NONE(stack -> false),
 	@AutoConfigEnum ALL(stack -> true),
-	@AutoConfigEnum ENCHANTED(ItemStack::hasEnchantments),
+	@AutoConfigEnum ENCHANTED(ItemStack::isEnchanted),
 	@AutoConfigEnum GOLD_DIAMOND_NETHERITE(stack -> ItemTypes.stackIsOfItem(stack, ItemTypes.goldTools, ItemTypes.diamondTools, ItemTypes.netheriteTools)),
 	@AutoConfigEnum DIAMOND_NETHERITE(stack -> ItemTypes.stackIsOfItem(stack, ItemTypes.diamondTools, ItemTypes.netheriteTools));
 
