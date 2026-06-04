@@ -1,14 +1,15 @@
 package blazingtwist.itemcounts.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -131,16 +132,16 @@ public class ItemCountsConfig implements ConfigData {
 			return enabled ^ toggleKeyActive ^ wasHoldKeyDown;
 		}
 
-		public void handleKeys(long windowHandle) {
+		public void handleKeys(Window window) {
 			if (toggleKeyCode > 0) {
-				boolean toggleKeyDown = InputUtil.isKeyPressed(windowHandle, toggleKeyCode);
+				boolean toggleKeyDown = InputConstants.isKeyDown(window, toggleKeyCode);
 				if (toggleKeyDown && !wasToggleKeyDown) {
 					toggleKeyActive = !toggleKeyActive;
 				}
 				wasToggleKeyDown = toggleKeyDown;
 			}
 			if (holdKeyCode > 0) {
-				wasHoldKeyDown = InputUtil.isKeyPressed(windowHandle, holdKeyCode);
+				wasHoldKeyDown = InputConstants.isKeyDown(window, holdKeyCode);
 			}
 		}
 
@@ -180,7 +181,7 @@ public class ItemCountsConfig implements ConfigData {
 	public static class ItemCountSeparationRules {
 		// still better than hard-coding '40' and getting sneaky errors when they inevitably change this again...
 		@ConfigEntry.Gui.Excluded
-		public static final int offHandSlotIdx = PlayerInventory.EQUIPMENT_SLOTS.int2ObjectEntrySet().stream()
+		public static final int offHandSlotIdx = Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream()
 				.filter(e -> e.getValue() == EquipmentSlot.OFFHAND)
 				.map(Int2ObjectMap.Entry::getIntKey)
 				.findFirst().orElse(0);
@@ -199,27 +200,27 @@ public class ItemCountsConfig implements ConfigData {
 		public boolean separateName = false;
 		public boolean separateDurability = false;
 
-		public int getTotalItemCount(PlayerEntity player, ItemStack stack) {
-			PlayerInventory inventory = player.getInventory();
+		public int getTotalItemCount(Player player, ItemStack stack) {
+			Inventory inventory = player.getInventory();
 			// Thank you Mojank for this crap. Your previous model was perfectly descriptive.
-			return IntStream.range(0, inventory.getMainStacks().size() + EquipmentSlot.values().length)
-					.mapToObj(inventory::getStack)
+			return IntStream.range(0, inventory.getNonEquipmentItems().size() + EquipmentSlot.values().length)
+					.mapToObj(inventory::getItem)
 					.filter(other -> mergeStackCounts(stack, other))
 					.mapToInt(ItemStack::getCount)
 					.sum();
 		}
 
-		public int getHotbarItemCount(PlayerEntity player, ItemStack stack) {
-			PlayerInventory inventory = player.getInventory();
+		public int getHotbarItemCount(Player player, ItemStack stack) {
+			Inventory inventory = player.getInventory();
 			return Stream.concat(IntStream.range(0, 9).boxed(), IntStream.of(offHandSlotIdx).boxed())
-					.map(inventory::getStack)
+					.map(inventory::getItem)
 					.filter(other -> mergeStackCounts(stack, other))
 					.mapToInt(ItemStack::getCount)
 					.sum();
 		}
 
 		private boolean mergeStackCounts(ItemStack a, ItemStack b) {
-			return ItemStack.areItemsEqual(a, b) && !countStacksSeparately(a, b);
+			return ItemStack.isSameItem(a, b) && !countStacksSeparately(a, b);
 		}
 
 		private boolean countStacksSeparately(ItemStack a, ItemStack b) {
@@ -233,11 +234,11 @@ public class ItemCountsConfig implements ConfigData {
 		}
 
 		private boolean nameMatches(ItemStack a, ItemStack b) {
-			return a.getName().equals(b.getName());
+			return a.getHoverName().equals(b.getHoverName());
 		}
 
 		private boolean durabilityMatches(ItemStack a, ItemStack b) {
-			return a.getDamage() == b.getDamage();
+			return a.getDamageValue() == b.getDamageValue();
 		}
 	}
 }

@@ -1,13 +1,13 @@
 package blazingtwist.itemcounts.util;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class ColorHelper {
 
 	public static int lerpColor(float delta, int fromColor, int toColor) {
-		int red = MathHelper.lerp(delta, getRed(fromColor), getRed(toColor));
-		int green = MathHelper.lerp(delta, getGreen(fromColor), getGreen(toColor));
-		int blue = MathHelper.lerp(delta, getBlue(fromColor), getBlue(toColor));
+		int red = Mth.lerpInt(delta, getRed(fromColor), getRed(toColor));
+		int green = Mth.lerpInt(delta, getGreen(fromColor), getGreen(toColor));
+		int blue = Mth.lerpInt(delta, getBlue(fromColor), getBlue(toColor));
 		return setRGB(red, green, blue);
 	}
 
